@@ -1,91 +1,66 @@
 class Game {
-    private val cards: Map<String, Int> = mapOf(
-        "2" to 2,
-        "3" to 3,
-        "4" to 4,
-        "5" to 5,
-        "6" to 6,
-        "7" to 7,
-        "8" to 8,
-        "9" to 9,
-        "10" to 10,
-        "Jack" to 10,
-        "Queen" to 10,
-        "King" to 10,
-        "Ace" to 11
-    )
 
-    fun player() : Int
+    private val players: ArrayList<Player> = arrayListOf()
+
+    fun start(playersCount: Int)
     {
-        var points: Int = 0
-        var answer : String? = ""
-
-        while(points < 21)
+        for (i in 1..playersCount)
         {
-            if(points > 0)
-            {
-                println("Want more card? Y or N")
-                answer = readLine()?.toLowerCase()
-            }
+            println("Player #$i turn")
+            val casino: Casino = Casino()
+            val player : Player = Player(i)
+            casino.player()
+            player.scores = casino.points
+            player.cards = casino.cardsCount
 
-            if(answer == "n")
+            if(player.scores <= 21)
             {
-                return points
+                this.players.add(player)
             }
-            points += this.getCard()
-
-            println("Your points is $points")
         }
-        println("You can't take more cards :(")
-        return points
+
     }
 
-    fun dealer(user: Int ) : Int
+    fun result() : Unit
     {
-        var points: Int = 0
+        val winners: ArrayList<Player> = arrayListOf()
+        var winner: Player = Player(0)
 
-        while(points < 21)
-        {
-            points += this.getCard()
-            println("Dealer points is $points")
+        val dealer: Casino = Casino()
+        dealer.dealer()
 
-            if(points > 10 && (points > user || user > 21) )
-            {
-                println("Dealer stop")
-                return points
+        winner.scores = 0
+        winner.cards = 0
+
+        for (player in this.players) {
+            if (player.scores > winner.scores) {
+                winner = player
+                winners.clear()
             }
 
-            if(points > 21)
-            {
-                println("Dealer stop")
+            if (player.id != winner.id && player.scores == winner.scores) {
+
+                if(winner.cards > player.cards)
+                {
+                    winner = player
+                    winners.clear()
+                }
+
+                if(winner.cards == player.cards)
+                {
+                    winners.add(winner)
+                    winners.add(player)
+
+                }
             }
         }
 
-        return points
-    }
-
-    private fun getCard() : Int {
-        val card = this.cards.entries.shuffled().first()
-        println("Card is ${card.key}")
-        return card.value
-    }
-
-    fun selectWinner(user: Int, dealer: Int) : String {
-        if(user > 21)
+        if(winners.count() == 0)
         {
-            return "You lose :("
+            winners.add(winner)
         }
 
-        if(dealer > 21)
-        {
-            return "Dealer lose!"
-        }
+        println(dealer.selectWinner(winners))
 
-        if(dealer > user)
-        {
-            return "Dealer win!"
-        }
-
-        return "You win! :)"
     }
 }
