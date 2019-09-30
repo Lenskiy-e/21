@@ -1,33 +1,32 @@
 class Game {
 
     private val players: ArrayList<Player> = arrayListOf()
+    private val cards: Cards = Cards()
 
     fun start(playersCount: Int)
     {
         for (i in 1..playersCount)
         {
-            println("Player #$i turn")
-            val casino: Casino = Casino()
-            val player : Player = Player(i)
-            casino.player()
+            val casino = Casino()
+            val player = Player(i)
+
+            casino.player(cards)
             player.scores = casino.points
             player.cards = casino.cardsCount
 
-            if(player.scores <= 21)
-            {
+            if(player.scores <= 21){
                 this.players.add(player)
             }
         }
-
     }
 
-    fun result() : Unit
+    fun result()
     {
         val winners: ArrayList<Player> = arrayListOf()
-        var winner: Player = Player(0)
+        var winner = Player(0)
 
-        val dealer: Casino = Casino()
-        dealer.dealer()
+        val dealer = Casino()
+        dealer.dealer(cards)
 
         winner.scores = 0
         winner.cards = 0
